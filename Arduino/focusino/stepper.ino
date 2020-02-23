@@ -27,3 +27,16 @@ void enableOutputs() {
   
   output = true;
 }
+
+/**
+ * Set the stepper motor resolution.
+ */
+void setResolution(bool full) {
+    fullStep = full;
+
+    digitalWrite(M2_PIN, full ? LOW : HIGH);
+    
+    EEPROM.update(
+      STEP_RESOLUTION_EEPROM_ADDRESS,
+      full ? 1 : 0);  
+}
