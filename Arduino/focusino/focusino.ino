@@ -35,7 +35,7 @@ byte index;
 
 // Variables.
 char response[4];
-long position, target;
+long position, home, target;
 
 byte speed;
 bool fullStep;

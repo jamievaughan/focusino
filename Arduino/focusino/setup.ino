@@ -32,6 +32,9 @@ void setup() {
   position = readLongEEPROM(POSITION_EEPROM_ADDRESS);
   stepper.setCurrentPosition(position);
 
+  // Set the home to the startup position.
+  home = position;
+
   // Set the output as disabled until we start moving.
   disableOutputs();
 }

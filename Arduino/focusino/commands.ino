@@ -90,7 +90,13 @@ void handleIncomingData() {
       return;
     }
 
-    // TODO: Home the motor.
+    if (position == home) {
+      return;
+    }
+    
+    stepper.moveTo(home);
+    
+    enableOutputs();
   }
   else if (strncmp(&data[1], "SC", 2) == 0) { // Set temperature coefficient.
     temperature_coef = sign(strtol(&data[3], NULL, HEX), 8);
