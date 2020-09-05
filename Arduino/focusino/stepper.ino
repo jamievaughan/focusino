@@ -8,7 +8,7 @@ void disableOutputs() {
   }
   
   stepper.disableOutputs();
-  digitalWrite(13, LOW);
+  digitalWrite(LOADING_LED_PIN, LOW);
   
   output = false;
 }
@@ -23,7 +23,7 @@ void enableOutputs() {
   }
   
   stepper.enableOutputs();
-  digitalWrite(13, HIGH);
+  digitalWrite(LOADING_LED_PIN, HIGH);
   
   output = true;
 }
@@ -32,11 +32,16 @@ void enableOutputs() {
  * Set the stepper motor resolution.
  */
 void setResolution(bool full) {
-    fullStep = full;
-
-    digitalWrite(M2_PIN, full ? LOW : HIGH);
-    
-    EEPROM.update(
-      STEP_RESOLUTION_EEPROM_ADDRESS,
-      full ? 1 : 0);  
+  if (fullStep == full) {
+    return;
+  }
+  
+  fullStep = full;
+  
+  digitalWrite(M1_PIN, full ? HIGH : LOW);
+  digitalWrite(M2_PIN, full ? HIGH : LOW);
+  
+  EEPROM.update(
+    STEP_RESOLUTION_EEPROM_ADDRESS,
+    full ? 1 : 0);  
 }

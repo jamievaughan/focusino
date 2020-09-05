@@ -1,5 +1,7 @@
 /**
  * Handle incoming command data.
+ * 
+ * Example - :GV# <- Get the firmware version.
  */
 void handleIncomingData() {
   if (strncmp(&data[1], "C", 1) == 0) { // Initiate temperature conversion.
@@ -7,10 +9,21 @@ void handleIncomingData() {
       return;
     }
 
+    // The requesting and conversion of the temperature is an
+    // expensive process and must be limited.
+    if (millis() - lastTemperatureConversion < 5000) {
+      return;
+    }
+
     sensors.requestTemperatures();
 
     // This is a slow process.
     raw_temperature = sensors.getTempCByIndex(0);
+
+    // Divide by 2 as each increment is half a degree offset.
+    temperature = (raw_temperature * temperature_coef) + (temperature_offset / 2.0);
+
+    lastTemperatureConversion = millis();
   }
   else if (strncmp(&data[1], "GB", 2) == 0) { // Get backlight value.
     Serial.print("00#");
@@ -32,10 +45,7 @@ void handleIncomingData() {
     Serial.print(response);
     Serial.print('#');
   }
-  else if (strncmp(&data[1], "GT", 2) == 0) { // Get temperature.
-    // Divide by 2 as each increment is half a degree offset.
-    temperature = (raw_temperature * temperature_coef) + (temperature_offset / 2.0);
-    
+  else if (strncmp(&data[1], "GT", 2) == 0) { // Get temperature.    
     sprintf(response, "%04X", temperature);
 
     Serial.print(response);
@@ -100,7 +110,7 @@ void handleIncomingData() {
     position = strtol(&data[3], NULL, HEX);
 
     stepper.setCurrentPosition(position);
-    writeLong(POSITION_EEPROM_ADDRESS, position);
+    writeLongEEPROM(POSITION_EEPROM_ADDRESS, position);
   }
   else if (strncmp(&data[1], "SN", 2) == 0) { // Set the new target position.
     if (output) {

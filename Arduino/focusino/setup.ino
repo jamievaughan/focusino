@@ -19,12 +19,17 @@ void setup() {
   // Read the temperature offset from EEPROM.
   temperature_offset = sign(EEPROM.read(TEMP_OFFSET_EEPROM_ADDRESS), 8);
 
+  stepper.setEnablePin(ENABLE_PIN);
+  
+  // Required for the TMC2208.
+  stepper.setPinsInverted(false, false, true);
+  
   stepper.setSpeed(speed * SPEED_MULTIPLIER);
   stepper.setMaxSpeed(speed * SPEED_MULTIPLIER);
   stepper.setAcceleration(speed * ACCELERATION_MULTIPLIER);
 
   // Read the existing position and set the stepper.
-  position = readLong(POSITION_EEPROM_ADDRESS);
+  position = readLongEEPROM(POSITION_EEPROM_ADDRESS);
   stepper.setCurrentPosition(position);
 
   // Set the output as disabled until we start moving.

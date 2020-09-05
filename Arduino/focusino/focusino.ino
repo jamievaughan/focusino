@@ -4,30 +4,25 @@
 #include <OneWire.h> 
 #include <DallasTemperature.h>
 
-// Pin output configuration
+// Pin output configuration.
+#define ENABLE_PIN 6
 #define STEPPER_PIN 3
 #define DIRECTION_PIN 2
-#define ONE_WIRE_BUS_PIN 5
-#define M2_PIN 7
+#define ONE_WIRE_BUS_PIN 9
+#define M1_PIN 5
+#define M2_PIN 4
+#define LOADING_LED_PIN 13
 
-// Motor configuration
+// Stepper motor configuration.
 #define DEFAULT_SPEED 8
 #define ACCELERATION_MULTIPLIER 200
 #define SPEED_MULTIPLIER 400
 
-// The start address in the EEPROM for the position.
+// The start addresses in the EEPROM.
 #define POSITION_EEPROM_ADDRESS 0
-
-// The start address in the EEPROM for the speed.
 #define SPEED_EEPROM_ADDRESS 4
-
-// The start address in the EEPROM for the temperature coeffcient.
 #define TEMP_COEF_EEPROM_ADDRESS 5
-
-// The start address in the EEPROM for the temperature offset.
 #define TEMP_OFFSET_EEPROM_ADDRESS 6
-
-// The start address in the EEPROM for the step resolution.
 #define STEP_RESOLUTION_EEPROM_ADDRESS 7
 
 // Whether the output pins are enabled/disabled.
@@ -38,7 +33,7 @@ char data[8];
 char val;
 byte index;
 
-// Variables
+// Variables.
 char response[4];
 long position, target;
 
@@ -49,6 +44,8 @@ int raw_temperature,
     temperature,
     temperature_coef,
     temperature_offset;
+
+long lastTemperatureConversion;
 
 // Create the stepper instance.
 AccelStepper stepper = AccelStepper(
@@ -71,7 +68,7 @@ void loop() {
   }
   else if (stepper.distanceToGo() == 0 && output) {
     // Write the stepper position to the EEPROM.
-    writeLong(POSITION_EEPROM_ADDRESS, stepper.currentPosition());
+    writeLongEEPROM(POSITION_EEPROM_ADDRESS, stepper.currentPosition());
     
     disableOutputs();
   }
@@ -86,7 +83,7 @@ void loop() {
 
     // We've received a command terminator
     // so its time to process the command.
-    if (val == '#') {      
+    if (val == '#') {
       handleIncomingData();
       
       index = 0;
