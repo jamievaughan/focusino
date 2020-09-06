@@ -12,7 +12,6 @@ A custom firmware solution for a MoonLite protocol compatible Arduino telescope 
 https://indilib.org/media/kunena/attachments/1/HighResSteppermotor107.pdf
 
 ## TODO
-* Position homing
 * Configurable output enable/disable to maintain holding torque (required for TMC2208)
 
 ## Hardware
