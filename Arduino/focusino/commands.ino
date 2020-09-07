@@ -73,9 +73,6 @@ void handleIncomingData() {
     
     EEPROM.update(SPEED_EEPROM_ADDRESS, speed);
   }
-  else if (strncmp(&data[1], "GH", 2) == 0) { // Get half-step state.
-    writeResponse(fullStep ? "00" : "FF"); // FF - Half-step / 00 - Full-step
-  }
   else if (strncmp(&data[1], "GI", 2) == 0) { // Get running state.
     writeResponse(output ? "01" : "00");
   }
@@ -90,7 +87,7 @@ void handleIncomingData() {
 
     stepper.moveTo(home);
 
-    enableOutputs();
+    setOutputMode(true);
   }
   else if (strncmp(&data[1], "SC", 2) == 0) { // Set temperature coefficient.
     temperature_coef = sign(strtol(&data[3], NULL, HEX), 8);
@@ -126,15 +123,27 @@ void handleIncomingData() {
       return;
     }
     
-    enableOutputs();
+    setOutputMode(true);
   }
-  else if (strncmp(&data[1], "FQ", 2) == 0) { // Stop the motor from running.
-    disableOutputs();
+  else if (strncmp(&data[1], "FQ", 2) == 0) { // Stop the motor from running.    
+    setOutputMode(false);
+  }
+  else if (strncmp(&data[1], "GH", 2) == 0) { // Get half-step state.
+    writeResponse(fullStep ? "00" : "FF"); // FF - Half-step / 00 - Full-step
   }
   else if (strncmp(&data[1], "SF", 2) == 0) { // Set full-step mode.
-    setResolution(true);
+    setResolution(true, true);
   }
   else if (strncmp(&data[1], "SH", 2) == 0) { // Set half-step mode.
-    setResolution(false);
+    setResolution(false, true);
+  }
+  else if (strncmp(&data[1], "HS", 2) == 0) { // Get holding state.
+    writeResponse(holding ? "FF" : "00");
+  }
+  else if (strncmp(&data[1], "HE", 2) == 0) { // Holding enabled.    
+    setHolding(true, true);
+  }
+  else if (strncmp(&data[1], "HD", 2) == 0) { // Holding disabled.    
+    setHolding(false, true);
   }
 }

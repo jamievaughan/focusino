@@ -3,15 +3,16 @@
 void setup() {
   Serial.begin(BAUDRATE);
   
-  sensors.begin(); 
+  sensors.begin();
 
   // Read the speed from EEPROM.
   speed = EEPROM.read(SPEED_EEPROM_ADDRESS);
 
   // Read and set the step resolution from EEPROM.
-  setResolution(EEPROM.read(STEP_RESOLUTION_EEPROM_ADDRESS) == 1
+  setResolution(EEPROM.read(STEP_RESOLUTION_EEPROM_ADDRESS) > 0
     ? true
-    : false);
+    : false,
+    false);
 
   // Read the temperature coefficient from EEPROM.
   temperature_coef = sign(EEPROM.read(TEMP_COEF_EEPROM_ADDRESS), 8);
@@ -35,7 +36,10 @@ void setup() {
 
   // Set the home to the startup position.
   home = position;
-
-  // Set the output as disabled until we start moving.
-  disableOutputs();
+  
+  // Read the holding flag from EEPROM.
+  setHolding(EEPROM.read(HOLDING_EEPROM_ADDRESS) > 0
+    ? true
+    : false,
+    false);
 }

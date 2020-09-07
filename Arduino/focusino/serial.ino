@@ -1,4 +1,3 @@
-
 /**
  * Write a response to the serial output.
  */

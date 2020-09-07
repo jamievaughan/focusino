@@ -24,6 +24,7 @@
 #define TEMP_COEF_EEPROM_ADDRESS 5
 #define TEMP_OFFSET_EEPROM_ADDRESS 6
 #define STEP_RESOLUTION_EEPROM_ADDRESS 7
+#define HOLDING_EEPROM_ADDRESS 8
 
 // Whether the output pins are enabled/disabled.
 bool output;
@@ -38,7 +39,7 @@ char response[4];
 long position, home, target;
 
 byte speed;
-bool fullStep;
+bool fullStep, holding;
 
 int raw_temperature,
     temperature,
@@ -70,7 +71,7 @@ void loop() {
     // Write the stepper position to the EEPROM.
     writeLongEEPROM(POSITION_EEPROM_ADDRESS, stepper.currentPosition());
     
-    disableOutputs();
+    setOutputMode(false);
   }
   
   // Listen for any incoming serial data.

@@ -1,37 +1,50 @@
-/**
- * Disable the stepper motor output pins
- * by setting their state to LOW.
- */
-void disableOutputs() {
-  if (!output) {
+void setHolding(bool enabled, bool updateEeprom) {
+  if (holding == enabled) {
     return;
   }
   
-  stepper.disableOutputs();
-  digitalWrite(LOADING_LED_PIN, LOW);
-  
-  output = false;
-}
+  holding = enabled;
 
+  if (enabled) {
+    stepper.enableOutputs();
+  }
+  else {    
+    stepper.disableOutputs();
+  }
+
+  if (updateEeprom) {
+    EEPROM.update(
+      HOLDING_EEPROM_ADDRESS,
+      enabled ? 1 : 0);
+  }
+}
 /**
-* Enable the stepper motor pins
-* by setting their state to HIGH.
+* Change the output mode including the output mode
+* of the stepper.
 */
-void enableOutputs() {
-  if (output) {
+void setOutputMode(bool enabled) {
+  if (output == enabled) {
     return;
   }
+
+  if(!holding) {
+    if (enabled) {
+      stepper.enableOutputs();
+    }
+    else {    
+      stepper.disableOutputs();
+    }
+  }
   
-  stepper.enableOutputs();
-  digitalWrite(LOADING_LED_PIN, HIGH);
+  digitalWrite(LOADING_LED_PIN, enabled ? HIGH : LOW);
   
-  output = true;
+  output = enabled;
 }
 
 /**
  * Set the stepper motor resolution.
  */
-void setResolution(bool full) {
+void setResolution(bool full, bool updateEeprom) {
   if (fullStep == full) {
     return;
   }
@@ -40,8 +53,10 @@ void setResolution(bool full) {
   
   digitalWrite(M1_PIN, full ? HIGH : LOW);
   digitalWrite(M2_PIN, full ? HIGH : LOW);
-  
-  EEPROM.update(
-    STEP_RESOLUTION_EEPROM_ADDRESS,
-    full ? 1 : 0);  
+
+  if (updateEeprom) {
+    EEPROM.update(
+      STEP_RESOLUTION_EEPROM_ADDRESS,
+      full ? 1 : 0);
+  }
 }
