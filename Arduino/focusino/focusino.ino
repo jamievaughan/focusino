@@ -56,7 +56,7 @@ AccelStepper stepper = AccelStepper(
 // Setup a oneWire instance to communicate with any OneWire devices.
 OneWire oneWire(ONE_WIRE_BUS_PIN); 
 
-// Pass our oneWire reference to Dallas Temperature. 
+// Pass our oneWire reference for the Dallas Temperature Sensor. 
 DallasTemperature sensors(&oneWire);
 
 void loop() {

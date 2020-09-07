@@ -26,49 +26,43 @@ void handleIncomingData() {
     lastTemperatureConversion = millis();
   }
   else if (strncmp(&data[1], "GB", 2) == 0) { // Get backlight value.
-    Serial.print("00#");
+    writeResponse("00");
   }
   else if (strncmp(&data[1], "GV", 2) == 0) { // Get firmware version.
-    Serial.print("10#");
+    writeResponse("10");
   }
   else if (strncmp(&data[1], "GP", 2) == 0) { // Get position.
     position = stepper.currentPosition();
     sprintf(response, "%04X", position);
 
-    Serial.print(response);
-    Serial.print('#');
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "GN", 2) == 0) { // Get target position.
     target = stepper.targetPosition();
     sprintf(response, "%04X", target);
 
-    Serial.print(response);
-    Serial.print('#');
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "GT", 2) == 0) { // Get temperature.    
     sprintf(response, "%04X", temperature);
 
-    Serial.print(response);
-    Serial.print("#");
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "GC", 2) == 0) { // Get temperature coefficient.
     sprintf(response, "%02X", temperature_coef);
     
-    Serial.print(response);
-    Serial.print("#");
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "GO", 2) == 0) { // Get temperature offset.
     sprintf(response, "%04X", temperature_offset);
     
-    Serial.print(response);
-    Serial.print("#");
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "GD", 2) == 0) { // Get motor speed.
     // Speeds - 02, 04, 08, 10, 20
     sprintf(response, "%02X", speed);
     
-    Serial.print(response);
-    Serial.print("#");
+    writeResponse(response);
   }
   else if (strncmp(&data[1], "SD", 2) == 0) { // Set motor speed.
     speed = strtol(&data[3], NULL, HEX);
@@ -80,10 +74,10 @@ void handleIncomingData() {
     EEPROM.update(SPEED_EEPROM_ADDRESS, speed);
   }
   else if (strncmp(&data[1], "GH", 2) == 0) { // Get half-step state.
-    Serial.print(fullStep ? "00#" : "FF#"); // FF - Half-step / 00 - Full-step
+    writeResponse(fullStep ? "00" : "FF"); // FF - Half-step / 00 - Full-step
   }
   else if (strncmp(&data[1], "GI", 2) == 0) { // Get running state.
-    Serial.print(output ? "01#" : "00#");
+    writeResponse(output ? "01" : "00");
   }
   else if (strncmp(&data[1], "PH", 2) == 0) { // Home the motor.
     if (output) {
@@ -93,9 +87,9 @@ void handleIncomingData() {
     if (position == home) {
       return;
     }
-    
+
     stepper.moveTo(home);
-    
+
     enableOutputs();
   }
   else if (strncmp(&data[1], "SC", 2) == 0) { // Set temperature coefficient.

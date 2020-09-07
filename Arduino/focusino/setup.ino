@@ -19,6 +19,7 @@ void setup() {
   // Read the temperature offset from EEPROM.
   temperature_offset = sign(EEPROM.read(TEMP_OFFSET_EEPROM_ADDRESS), 8);
 
+  // Enable the stepper motor.
   stepper.setEnablePin(ENABLE_PIN);
   
   // Required for the TMC2208.
